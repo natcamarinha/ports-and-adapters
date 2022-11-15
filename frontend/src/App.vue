@@ -1,31 +1,52 @@
 <script setup lang="ts">
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import HelloWorld from './components/HelloWorld.vue'
+  import { reactive, ref } from 'vue';
+
+  const todos: any = reactive([
+    {
+      description: 'Estudar Typescript',
+      done: true,
+    },
+    {
+      description: 'Fazer a prova online',
+      done: false,
+    },
+    {
+      description: 'Cortar a grama',
+      done: false,
+    }
+  ]);
+  const description = ref("");
+
+  function addItem() {
+    if (!description.value) return;
+    if (todos.some((item: any) => item.description === description.value)) return;
+    if (todos.filter((item: any) => !item.done).length > 4) return;
+    todos.push({ description: description.value, done: false });
+    description.value = '';
+  }
+
+  function removeItem(item: any) {
+    todos.splice(todos.indexOf(item), 1);
+  }
+
+  function toggleDone(item: any) {
+    item.done = !item.done;
+  }
 </script>
 
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div v-if="todos.length === 0">No Item</div>
+  <div v-for="item in todos">
+    <span :style="{ 'text-decoration': (item.done) ? 'line-through': ''}">
+      {{ item.description}}
+    </span>
+    <button @click="toggleDone(item)">Done/Undone</button>
+    <button @click="removeItem(item)">x</button>
   </div>
-  <HelloWorld msg="Vite + Vue" />
+  {{ description }}
+  <input type="text" v-model="description" v-on:keyup.enter="addItem()"/>
 </template>
 
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
+
 </style>
